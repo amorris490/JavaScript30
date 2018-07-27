@@ -58,7 +58,63 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+    const removeTransition = (e) => {
+        if (e.propertyName !== 'transform') {
+            return;
+        }
+        e.target.classList.remove('playing');
+    }
 
+    const keys  = document.querySelectorAll('.key');
+    keys.forEach((key) => {
+        key.addEventListener('transitionend', (e) => {
+            removeTransition(e);
+        });
+    });
+    console.log(keys);
+
+    const playSound = (keyCode) => {
+
+        const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+        const key = document.querySelector(`div[data-key="${keyCode}"]`);
+
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+        if (key) {
+            key.classList.add('playing');
+        }
+
+    }
+
+    let bpm = 0;
+    let startTime = -1;
+    let numHits = 0;
+
+    const updateBpm =() => {
+        const timeDelta = ((new Date().getTime()) - startTime) / 1000;
+        bpm = (numHits / timeDelta) * 60;
+        console.log(bpm);
+    }
+
+    const kick = () => {
+        if (numHits >= 1) {
+            numHits++;
+            updateBpm();
+        } else {
+            startTime = new Date().getTime();
+            numHits++;
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        playSound(e.keyCode);
+        if (e.keyCode === 68) {
+            kick();
+        }
+    });
 </script>
 
 
